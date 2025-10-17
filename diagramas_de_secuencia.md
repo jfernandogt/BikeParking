@@ -119,3 +119,39 @@ sequenceDiagram
     end
 
 ```
+
+## Envío de reseña
+
+Diagrama que muestra el flujo a la hora de que el usuario sube una reseña
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User (Cyclist)
+    participant APP as BikeParking App
+    participant AUTH as Auth Service
+    participant DB as Parking DB
+    participant MOD as Admin Moderation
+
+    %% UC-04: Reseñas y calificaciones (comunidad)
+    U->>APP: Abrir ficha → pestaña Reseñas
+    APP->>DB: GET /reviews?parkingId={id}&status=approved&limit=20
+    DB-->>APP: 200 OK [reseñas...]
+
+    U->>APP: Enviar reseña (rating, texto, fotos)
+    APP->>AUTH: Verificar uid y límites
+    AUTH-->>APP: OK
+    APP->>DB: POST /reviews {parkingId, uid, rating, text, photos, status=pending}
+    DB-->>APP: 201 Created
+
+    DB-->>MOD: Evento onCreate reviews(status=pending)
+    alt Aprobada
+        MOD->>DB: PATCH /reviews/{id} {status=approved}
+        DB-->>MOD: 200 OK
+        APP-->>U: Reseña publicada
+    else Rechazada
+        MOD->>DB: PATCH /reviews/{id} {status=rejected, reason}
+        DB-->>MOD: 200 OK
+        APP-->>U: Notificación de rechazo
+    end
+```
