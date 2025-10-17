@@ -155,3 +155,35 @@ sequenceDiagram
         APP-->>U: Notificación de rechazo
     end
 ```
+
+## Diagrama de secuencia para cambios en parqueos
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User (Cyclist)
+    participant APP as BikeParking App
+    participant AUTH as Auth Service
+    participant DB as Parking DB
+    participant MOD as Admin Moderation
+
+    %% UC-07: Edición comunitaria y control de versiones (soft-edit)
+    U->>APP: Proponer edición a ficha (horario, seguridad, costo, foto)
+    APP->>AUTH: Verificar uid
+    AUTH-->>APP: OK
+    APP->>DB: POST /parkingEdits {parkingId, uid, patch, evidence, status=pending}
+    DB-->>APP: 201 Created
+
+    DB-->>MOD: Evento onCreate parkingEdits
+    alt Aprobada (merge)
+        MOD->>DB: PATCH /parkings/{id} {apply:patch, updatedAt, lastEditor=uid}
+        DB-->>MOD: 200 OK
+        MOD->>DB: PATCH /parkingEdits/{editId} {status=approved}
+        DB-->>MOD: 200 OK
+        APP-->>U: Cambios publicados
+    else Rechazada
+        MOD->>DB: PATCH /parkingEdits/{editId} {status=rejected, reason}
+        DB-->>MOD: 200 OK
+        APP-->>U: Notificación de rechazo
+    end
+```
