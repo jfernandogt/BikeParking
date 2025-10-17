@@ -1,6 +1,10 @@
 # Diagrama de la arquitectura
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart LR
  subgraph Usuario["Usuario"]
         U["Ciclista (Usuario)"]
@@ -36,7 +40,6 @@ flowchart LR
     Firebase --- Externos
     FS --- SECR
     ST --- SECR
-
     MODS@{ shape: rect}
      U:::box
      APP:::box
@@ -59,4 +62,5 @@ flowchart LR
     style Firebase fill:#FFF9C4
     style Externos fill:#C8E6C9
     style App_Movil fill:#BBDEFB
+
 ```
