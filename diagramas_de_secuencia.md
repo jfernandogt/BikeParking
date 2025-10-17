@@ -78,3 +78,44 @@ sequenceDiagram
         BROWSER-->>U: Abre rutas en Google Maps Web
     end
 ```
+
+## Creación de un nuevo parqueo
+
+Diagrama que explica el proceso de creación de un nuevo parqueo
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User (Cyclist)
+    participant APP as BikeParking App (Mobile)
+    participant AUTH as Auth Service
+    participant DB as Parking DB
+    participant MOD as Admin Moderation
+    participant PUSH as Push Service
+
+    %% UC-03: Alta de nuevo parqueo por la comunidad (1 por centro comercial)
+    U->>APP: Crear parqueo (Centro Comercial X)
+    APP->>AUTH: Verificar sesión (uid)
+    AUTH-->>APP: OK
+
+    Note over U,APP: Completar formulario
+    APP->>DB: POST /parkings {name, location, mall=true, uniqueKey=slug/geo, seguridad, horario, costo, fotos, createdBy=uid, status=pending}
+    DB-->>APP: 201 Created {parkingId, status=pending}
+
+    APP-->>U: Confirmación "En revisión"
+
+    %% Moderación y unicidad
+    DB-->>MOD: Evento onCreate parkings(status=pending)
+    MOD->>DB: Check duplicados (misma área/nombre) y validar contenido
+    alt Duplicado o inválido
+        MOD->>DB: PATCH /parkings/{id} {status=rejected, reason}
+        DB-->>MOD: 200 OK
+        APP-->>U: Notificación rechazo con motivo
+    else Válido
+        MOD->>DB: PATCH /parkings/{id} {status=approved, approvedAt}
+        DB-->>MOD: 200 OK
+        DB-->>APP: Nuevo parqueo visible en búsquedas
+        PUSH-->>U: Notificación: "Parqueo aprobado"
+    end
+
+```
