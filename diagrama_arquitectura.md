@@ -27,7 +27,6 @@ flowchart LR
   end
  subgraph Externos["Servicios Externos"]
         NAV["Apps navegación (Waze / Google / Apple)"]
-        GIS["GIS (ciclovías GeoJSON opcional)"]
   end
     U --> APP
     APP --> SDK
@@ -55,7 +54,6 @@ flowchart LR
      RC:::box
      SECR:::box
      NAV:::box
-     GIS:::box
     classDef grp fill:#f7fbff,stroke:#7aa6d8
     classDef grp2 fill:#fff8e1,stroke:#f4c95d
     classDef box fill:#ffffff,stroke:#9e9e9e
