@@ -1,0 +1,165 @@
+
+' Diagrama de Casos de Uso
+@startuml Diagrama De Casos de Uso
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciclista" as C
+actor "Administrador" as A
+
+rectangle "Sistema de Localización de Parqueos (BikeParking)" {
+  usecase "Registrar Usuario" as UC_REG
+  usecase "Iniciar/Cerrar Sesión" as UC_LOGIN
+  usecase "Gestionar Perfil y Preferencias" as UC_PERF
+  usecase "Buscar y Localizar Parqueos Cercanos" as UC_BUSCAR
+  usecase "Navegar a Parqueo" as UC_NAV
+  usecase "Gestionar Parqueos Favoritos" as UC_FAV
+  usecase "Crear Nuevo Parqueo" as UC_ALTA
+  usecase "Enviar Reseña y Calificación" as UC_RES
+  usecase "Sugerir Edición de Parqueo" as UC_EDIT
+  usecase "Moderar Contenido Comunitario" as UC_MOD
+  usecase "Consultar Métricas del Sistema" as UC_MET
+}
+
+C --> UC_REG
+C --> UC_LOGIN
+C --> UC_PERF
+C --> UC_BUSCAR
+C --> UC_NAV
+C --> UC_FAV
+C --> UC_ALTA
+C --> UC_RES
+C --> UC_EDIT
+
+A --> UC_MOD
+A --> UC_MET
+UC_PERF .> UC_FAV : includes
+@enduml
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciclista" as C
+
+rectangle "Sistema de Autenticación" {
+  usecase "Registrar Usuario" as UC_REG
+  usecase "Crear Perfil" as UC_PERFIL
+  usecase "Iniciar Sesión Exitosa" as UC_LOGIN
+}
+
+C --> UC_REG
+UC_REG .> UC_PERFIL : <<include>>
+UC_REG .> UC_LOGIN : <<include>>
+
+@enduml
+
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciclista" as C
+
+rectangle "Módulo de Búsqueda" {
+  usecase "Buscar y Localizar Parqueos Cercanos" as UC_BUSCAR
+  usecase "Aplicar Filtros de Búsqueda" as UC_FILTROS
+  usecase "Seleccionar Marcador" as UC_MARCADOR
+}
+
+C --> UC_BUSCAR
+UC_BUSCAR <. UC_FILTROS : <<extend>>
+UC_BUSCAR --> UC_MARCADOR
+
+@enduml
+
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciclista" as C
+actor "External Nav App" as NAV
+
+rectangle "Módulo de Navegación" {
+  usecase "Navegar a Parqueo" as UC_NAV
+}
+
+C --> UC_NAV
+UC_NAV --> NAV
+
+@enduml
+
+
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciclista" as C
+actor "Admin Moderation" as MOD
+
+rectangle "Módulo de Contribución" {
+  usecase "Enviar Reseña y Calificación" as UC_RES
+  usecase "Procesar Moderación" as UC_MOD
+  usecase "Notificar Contribución" as UC_NOT
+}
+
+C --> UC_RES
+UC_RES .> UC_MOD : <<include>>
+UC_MOD .> UC_NOT : <<include>>
+
+@enduml
+
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciclista" as C
+actor "Admin Moderation" as MOD
+
+rectangle "Módulo de Edición Comunitaria" {
+  usecase "Sugerir Edición de Parqueo" as UC_EDIT
+  usecase "Revisar y Aplicar Cambio" as UC_APLICAR
+  usecase "Notificar Resultado" as UC_NOT
+}
+
+C --> UC_EDIT
+UC_EDIT .> UC_APLICAR : <<include>>
+UC_APLICAR .> UC_NOT : <<include>>
+
+@enduml
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Administrador" as A
+
+rectangle "Panel de Administración" {
+  usecase "Moderar Contenido Comunitario" as UC_MOD
+  usecase "Aprobar Contenido (Publicar)" as UC_APROBAR
+  usecase "Rechazar Contenido (Opcional)" as UC_RECHAZAR
+}
+
+A --> UC_MOD
+UC_MOD .> UC_APROBAR : <<include>>
+UC_MOD <. UC_RECHAZAR : <<extend>>
+
+@enduml
+
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Administrador" as A
+
+rectangle "Panel de Administración" {
+  usecase "Consultar Métricas del Sistema" as UC_METRICAS
+}
+
+A --> UC_METRICAS
+
+@enduml
